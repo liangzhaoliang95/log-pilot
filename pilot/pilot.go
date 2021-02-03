@@ -3,6 +3,9 @@ package pilot
 import (
 	"bytes"
 	"fmt"
+	"github.com/docker/docker/api/types"
+	"github.com/docker/docker/api/types/filters"
+	"github.com/docker/docker/api/types/mount"
 	"io"
 	"io/ioutil"
 	"os"
@@ -16,6 +19,7 @@ import (
 
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/net/context"
+	"github.com/containerd/containerd"
 )
 
 /**
