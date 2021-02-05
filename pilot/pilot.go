@@ -23,6 +23,7 @@ import (
 	"golang.org/x/net/context"
 	"github.com/containerd/containerd"
 	"github.com/containerd/containerd/containers"
+	_ "github.com/containerd/containerd/api/events"
 )
 
 /**
@@ -339,7 +340,7 @@ func (p *Pilot) newContainer(containerJSON containers.Container) error {
 	env := spec.Process.Env
 	mounts := spec.Mounts
 	labels := containerJSON.Labels
-	jsonLogPath := fmt.Sprintf("/var/log/pods/%s_%s_%s/%s/0.log",
+	jsonLogPath := fmt.Sprintf("/var/log/pods/%s_%s_%s/%s/",
 		labels["io.kubernetes.pod.namespace"], labels["io.kubernetes.pod.name"],
 		labels["io.kubernetes.pod.uid"], labels["io.kubernetes.container.name"])
 
