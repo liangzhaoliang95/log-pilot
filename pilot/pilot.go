@@ -340,7 +340,7 @@ func (p *Pilot) newContainer(containerJSON containers.Container) error {
 	env := spec.Process.Env
 	mounts := spec.Mounts
 	labels := containerJSON.Labels
-	jsonLogPath := fmt.Sprintf("/var/log/pods/%s_%s_%s/%s/*",
+	jsonLogPath := fmt.Sprintf("/var/log/pods/%s_%s_%s/%s/*.log",
 		labels["io.kubernetes.pod.namespace"], labels["io.kubernetes.pod.name"],
 		labels["io.kubernetes.pod.uid"], labels["io.kubernetes.container.name"])
 
