@@ -19,11 +19,11 @@ import (
 	"text/template"
 	"time"
 
+	"github.com/containerd/containerd"
+	_ "github.com/containerd/containerd/api/events"
+	"github.com/containerd/containerd/containers"
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/net/context"
-	"github.com/containerd/containerd"
-	"github.com/containerd/containerd/containers"
-	_ "github.com/containerd/containerd/api/events"
 )
 
 /**
@@ -447,7 +447,7 @@ func (p *Pilot) processEvent(msg *events.Envelope) error {
 
 	switch msg.Topic {
 	case "/containers/create":
-		containerId,ok := msg.Field([]string{"event", "id"})
+		containerId, ok := msg.Field([]string{"event", "id"})
 		if !ok {
 			return errors.New("no container id")
 		}
@@ -466,7 +466,7 @@ func (p *Pilot) processEvent(msg *events.Envelope) error {
 		return p.newContainer(containerJSON)
 	//Increase the monitoring of container Exit events and repair the log duplicate collection caused by the failure to delete the exited container in time
 	case "/containers/delete":
-		containerId,ok := msg.Field([]string{"event", "id"})
+		containerId, ok := msg.Field([]string{"event", "id"})
 		if !ok {
 			return errors.New("no container id")
 		}

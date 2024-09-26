@@ -3,10 +3,14 @@
   enabled: true
   paths:
       - {{ .HostDir }}/{{ .File }}
+  cri.parse_flags: true
+  multiline:
+    pattern: '^(DEBUG|INFO|WARN|ERROR|\[|\(node|\d{4}/|\d+\.)'
+    negate: true
+    match: after
   scan_frequency: 10s
   fields_under_root: true
   {{if .Stdout}}
-  docker-json: true
   {{end}}
   {{if eq .Format "json"}}
   json.keys_under_root: true
