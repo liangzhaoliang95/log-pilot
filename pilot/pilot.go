@@ -19,11 +19,11 @@ import (
 	"text/template"
 	"time"
 
+	"github.com/containerd/containerd"
+	_ "github.com/containerd/containerd/api/events"
+	"github.com/containerd/containerd/containers"
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/net/context"
-	"github.com/containerd/containerd"
-	"github.com/containerd/containerd/containers"
-	_ "github.com/containerd/containerd/api/events"
 )
 
 /**
@@ -102,6 +102,7 @@ func New(tplStr string, baseDir string) (*Pilot, error) {
 	}
 
 	createSymlink := os.Getenv(ENV_PILOT_CREATE_SYMLINK) == "true"
+	log.Infof("log prefix: %v, create symlink: %v", logPrefix, createSymlink)
 	return &Pilot{
 		client:        client,
 		templ:         templ,
@@ -447,7 +448,7 @@ func (p *Pilot) processEvent(msg *events.Envelope) error {
 
 	switch msg.Topic {
 	case "/containers/create":
-		containerId,ok := msg.Field([]string{"event", "id"})
+		containerId, ok := msg.Field([]string{"event", "id"})
 		if !ok {
 			return errors.New("no container id")
 		}
@@ -466,7 +467,7 @@ func (p *Pilot) processEvent(msg *events.Envelope) error {
 		return p.newContainer(containerJSON)
 	//Increase the monitoring of container Exit events and repair the log duplicate collection caused by the failure to delete the exited container in time
 	case "/containers/delete":
-		containerId,ok := msg.Field([]string{"event", "id"})
+		containerId, ok := msg.Field([]string{"event", "id"})
 		if !ok {
 			return errors.New("no container id")
 		}
@@ -690,6 +691,7 @@ func (node *LogInfoNode) get(key string) string {
 }
 
 func (p *Pilot) getLogConfigs(jsonLogPath string, mounts []specs.Mount, labels map[string]string) ([]*LogConfig, error) {
+	//log.Infof("[init log config]: jsonLogPath:%s, mounts:%v, labels:%v", jsonLogPath, mounts, labels)
 	var ret []*LogConfig
 
 	mountsMap := make(map[string]specs.Mount)
@@ -701,6 +703,7 @@ func (p *Pilot) getLogConfigs(jsonLogPath string, mounts []specs.Mount, labels m
 	//sort keys
 	for k := range labels {
 		labelNames = append(labelNames, k)
+		log.Infof("label: %s=%s", k, labels[k])
 	}
 
 	customConfigs := make(map[string]string)
@@ -742,6 +745,11 @@ func (p *Pilot) getLogConfigs(jsonLogPath string, mounts []specs.Mount, labels m
 		CustomConfig(name, customConfigs, logConfig)
 		ret = append(ret, logConfig)
 	}
+
+	if len(ret) >= 0 {
+		log.Infof("logConfigs: %v", ret)
+	}
+	log.Infof("##############################################")
 	return ret, nil
 }
 
