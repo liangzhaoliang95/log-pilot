@@ -102,6 +102,7 @@ func New(tplStr string, baseDir string) (*Pilot, error) {
 	}
 
 	createSymlink := os.Getenv(ENV_PILOT_CREATE_SYMLINK) == "true"
+	log.Infof("log prefix: %v, create symlink: %v", logPrefix, createSymlink)
 	return &Pilot{
 		client:        client,
 		templ:         templ,
@@ -690,6 +691,7 @@ func (node *LogInfoNode) get(key string) string {
 }
 
 func (p *Pilot) getLogConfigs(jsonLogPath string, mounts []specs.Mount, labels map[string]string) ([]*LogConfig, error) {
+	//log.Infof("[init log config]: jsonLogPath:%s, mounts:%v, labels:%v", jsonLogPath, mounts, labels)
 	var ret []*LogConfig
 
 	mountsMap := make(map[string]specs.Mount)
@@ -701,6 +703,7 @@ func (p *Pilot) getLogConfigs(jsonLogPath string, mounts []specs.Mount, labels m
 	//sort keys
 	for k := range labels {
 		labelNames = append(labelNames, k)
+		log.Infof("label: %s=%s", k, labels[k])
 	}
 
 	customConfigs := make(map[string]string)
@@ -742,6 +745,11 @@ func (p *Pilot) getLogConfigs(jsonLogPath string, mounts []specs.Mount, labels m
 		CustomConfig(name, customConfigs, logConfig)
 		ret = append(ret, logConfig)
 	}
+
+	if len(ret) >= 0 {
+		log.Infof("logConfigs: %v", ret)
+	}
+	log.Infof("##############################################")
 	return ret, nil
 }
 
